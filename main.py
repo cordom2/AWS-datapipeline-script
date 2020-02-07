@@ -1,5 +1,6 @@
 import boto3
 import json
+import pprint
 
 def findPipelineId(obj_dictionary, identifier):
     lst = obj_dictionary['pipelineIdList']
@@ -35,7 +36,7 @@ def getStepInfo(step_list, pipeline_name, cluster_id, cluster_name):
             'Id': obj['Id'],
             'Name': obj['Name'],
             'Status': obj['Status']['State'],
-            'Config': obj['Config']
+            'Command': getCommand(obj)
         }
         if obj['Status']['State'] == 'COMPLETED' or obj['Status']['State'] == 'FAILED':
             start = obj['Status']['Timeline']['StartDateTime']
@@ -46,9 +47,17 @@ def getStepInfo(step_list, pipeline_name, cluster_id, cluster_name):
         offset = offset+1
     return info
 
+def getCommand(step):
+    args = ""
+    for obj in step["Config"]["Args"]:
+        args += obj + " "
+    args = args[:-1]
+    return args
+
 
 def main():
-    inputString = input("Please enter the name of the target data pipeline: ")
+    # inputString = input("Please enter the name of the target data pipeline: ")
+    inputString = "us-dev-state-job-pid"
 
     datapipeline = boto3.client('datapipeline')
     emr = boto3.client('emr')
@@ -72,7 +81,6 @@ def main():
 
     with open('output/output.json', 'w') as outfile:
         json.dump(step_info, outfile)
-
 
 
 if __name__ == "__main__":
