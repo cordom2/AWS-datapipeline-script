@@ -1,0 +1,247 @@
+{
+  "Pipeline Name": "us-dev-state-job-pid",
+  "Latest Cluster": {
+    "Id": "j-1VB3TO54N0V47",
+    "Name": "df-0712231ON4FKOR58GLB_@EMRCluster_2020-02-07T00:00:14"
+  },
+  "Steps": {
+    "15": {
+      "Id": "s-2DUO2RJNASDFA",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_13",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1"
+        ]
+      },
+      "Duration": "0:00:18.094000"
+    },
+    "14": {
+      "Id": "s-VAGVJ04QCEFQ",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_12",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && aws glue start-crawler --name us-dev-vid-to-pid-crawler --region us-east-1 || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:14.077000"
+    },
+    "13": {
+      "Id": "s-263IHVPZTZ3G4",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_11",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && aws glue update-crawler --name us-dev-vid-to-pid-crawler --table-prefix VID_TO_PID_GRAPH_DT_${DATE}_  --targets {\\\"S3Targets\\\":[{\\\"Path\\\":\\\"$VID_TO_PID_LOCATION\\\"}]} || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:02.079000"
+    },
+    "12": {
+      "Id": "s-D86LSPQDSD5",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_10",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && aws glue start-crawler --name us-dev-forecaster-pid-crawler --region us-east-1 || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:14.074000"
+    },
+    "11": {
+      "Id": "s-2G16MJ8GCG82U",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_9",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && aws glue update-crawler --name us-dev-forecaster-pid-crawler --targets {\\\"S3Targets\\\":[{\\\"Path\\\":\\\"$FORECASTER_PID_DEST\\\"}]} || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:02.067000"
+    },
+    "10": {
+      "Id": "s-1GBKRPVQNRQVC",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_8",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && sh /home/hadoop/scripts/resource-registry-put.sh forecaster_pid $FORECASTER_PID_DEST && sh /home/hadoop/scripts/resource-registry-put.sh vid_to_pid $VID_TO_PID_LOCATION || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:02.079000"
+    },
+    "9": {
+      "Id": "s-1JW5QYT8IBPHH",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_7",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && ( java -jar /home/hadoop/dynamo-manager-2.0.0-M1-feature-cassandra.jar --capacity-type=autoscaling --min-capacity=100 --max-capacity=1000 --target-utilization=90 --dynamo-region=us-east-1 --table-name=us-dev-graph_VIDToPidTable || true ) || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:04.067000"
+    },
+    "8": {
+      "Id": "s-W5PMK4S3J1ZI",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_6",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && spark-submit --master yarn --num-executors 78 --executor-cores 4 --executor-memory 15G  /home/hadoop/pid-job-3.1.1-3fd68bb3decd46127283eea5e183e708d9367116.jar || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:03:06.083000"
+    },
+    "7": {
+      "Id": "s-26V3USJVKK2CM",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_5",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && ( aws dynamodb tag-resource --resource-arn `aws dynamodb describe-table --region us-east-1 --table-name us-dev-graph_VIDToPidTable | jq -r .Table.TableArn` --tags Key=Product,Value=graph Key=BusinessUnit,Value=DataEngineering Key=Country,Value=us Key=Component,Value=vidToPid Key=Environment,Value=dev Key=Release,Value=ec2-user Key=Organization,Value=Spine || true ) || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:02.060000"
+    },
+    "6": {
+      "Id": "s-VRMIVCYU5K79",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_4",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && ( java -jar /home/hadoop/dynamo-manager-2.0.0-M1-feature-cassandra.jar --capacity-type=fixed --capacity=100000 --dynamo-region=us-east-1 --table-name=us-dev-graph_VIDToPidTable || true ) || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:04.063000"
+    },
+    "5": {
+      "Id": "s-1JD1LYKD4WCOC",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_3",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "source /home/hadoop/.bashrc && timeout 30m emrfs sync -m us-dev-state-job-pid-emrfs s3://us-dev-us-east-1-data/graph/forecaster_pid/ && timeout 30m emrfs sync -m us-dev-state-job-pid-emrfs s3://us-dev-us-east-1-data/graph/vid_to_pid/ || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:00:16.074000"
+    },
+    "4": {
+      "Id": "s-3F518X0SJCJ3E",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_2",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "aws dynamodb tag-resource --region us-east-1 --resource-arn `aws dynamodb describe-table --table-name us-dev-state-job-pid-emrfs --region us-east-1 | jq -r \".Table.TableArn\"` --tags Key=Product,Value=graph Key=BusinessUnit,Value=DataEngineering Key=Country,Value=us Key=Component,Value=state-job-pid Key=Environment,Value=dev Key=Release,Value=ec2-user Key=Organization,Value=Spine"
+        ]
+      },
+      "Duration": "0:00:02.068000"
+    },
+    "3": {
+      "Id": "s-37AF07SO4B6OQ",
+      "Name": "df-0712231ON4FKOR58GLB_@us-dev-state-job-pid_2020-02-07T00:00:14_Attempt=1_Step_1",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "bash",
+          "-c",
+          "emrfs create-metadata -m us-dev-state-job-pid-emrfs && emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 500 -w 125 || ( emrfs set-metadata-capacity -m us-dev-state-job-pid-emrfs -r 1 -w 1 && exit 1 )"
+        ]
+      },
+      "Duration": "0:02:32.087000"
+    },
+    "2": {
+      "Id": "s-34RREDEA2Y8LC",
+      "Name": "Install TaskRunner",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "s3://us-east-1.elasticmapreduce/libs/script-runner/script-runner.jar",
+        "Properties": {},
+        "Args": [
+          "s3://datapipeline-us-east-1/us-east-1/bootstrap-actions/latest/TaskRunner/install-remote-runner-v2",
+          "--workerGroup=df-0712231ON4FKOR58GLB_@EMRCluster_2020-02-07T00:00:14",
+          "--endpoint=https://datapipeline.us-east-1.amazonaws.com",
+          "--region=us-east-1",
+          "--logUri=s3://us-dev-us-east-1-logs/df-0712231ON4FKOR58GLB/EMRCluster/@EMRCluster_2020-02-07T00:00:14/@EMRCluster_2020-02-07T00:00:14_Attempt=1/",
+          "--taskRunnerId=d3502dea-6d54-4650-825b-b2ccf788acf6",
+          "--zipFile=http://datapipeline-us-east-1.s3.amazonaws.com/us-east-1/software/latest/TaskRunner/TaskRunner-1.0.zip",
+          "--mysqlFile=http://datapipeline-us-east-1.s3.amazonaws.com/us-east-1/software/latest/TaskRunner/mysql-connector-java-bin.jar",
+          "--hiveCsvSerdeFile=http://datapipeline-us-east-1.s3.amazonaws.com/us-east-1/software/latest/TaskRunner/csv-serde.jar",
+          "--proxyHost=",
+          "--proxyPort=-1",
+          "--username=",
+          "--password=",
+          "--windowsDomain=",
+          "--windowsWorkgroup=",
+          "--releaseLabel=emr-5.15.0",
+          "--jdbcDriverS3Path=s3://datapipeline-us-east-1/us-east-1/software/latest/TaskRunner/",
+          "--s3NoProxy=false"
+        ]
+      },
+      "Duration": "0:00:06.070000"
+    },
+    "1": {
+      "Id": "s-1R04RE6N3AO14",
+      "Name": "Enable Debugging",
+      "Status": "COMPLETED",
+      "Config": {
+        "Jar": "command-runner.jar",
+        "Properties": {},
+        "Args": [
+          "state-pusher-script"
+        ]
+      },
+      "Duration": "0:00:02.168000"
+    }
+  }
+}
