@@ -1,6 +1,5 @@
 import boto3
 import json
-import pprint
 
 def findPipelineId(obj_dictionary, identifier):
     lst = obj_dictionary['pipelineIdList']
@@ -20,9 +19,10 @@ def findClusterId(cluster_obj):
         if obj['key'] == '@resourceId':
             return obj['stringValue']
 
-def getStepInfo(step_list, pipeline_name, cluster_id, cluster_name):
+def getStepInfo(step_list, pipeline_name, cluster_id, cluster_name, awsRegion):
     offset = 0
     info = {
+        'AWS Region': awsRegion,
         'Pipeline Name': pipeline_name,
         'Latest Cluster': {
             'Id': cluster_id,
@@ -42,7 +42,6 @@ def getStepInfo(step_list, pipeline_name, cluster_id, cluster_name):
             start = obj['Status']['Timeline']['StartDateTime']
             end = obj['Status']['Timeline']['EndDateTime']
             info['Steps'][len(lst)-offset]['Duration'] = str(end - start)
-            # info['Steps'][len(lst)-offset]['Duration'] = (obj['Status']['Timeline']['EndDateTime'] - obj['Status']['Timeline']['StartDateTime'])
 
         offset = offset+1
     return info
@@ -56,11 +55,11 @@ def getCommand(step):
 
 
 def main():
-    # inputString = input("Please enter the name of the target data pipeline: ")
-    inputString = "us-dev-state-job-pid"
+    inputString = input("Please enter the name of the target data pipeline: ")
+    inputAwsRegion = input("Please enter the AWS Region: ")
 
-    datapipeline = boto3.client('datapipeline')
-    emr = boto3.client('emr')
+    datapipeline = boto3.client('datapipeline', region_name=inputAwsRegion)
+    emr = boto3.client('emr', region_name=inputAwsRegion)
 
     pipeline_list = datapipeline.list_pipelines()
 
@@ -75,7 +74,7 @@ def main():
 
     step_list = emr.list_steps(ClusterId=cluster_id)
 
-    step_info = getStepInfo(step_list, inputString, cluster_id, emr.describe_cluster(ClusterId=cluster_id)['Cluster']['Name'])
+    step_info = getStepInfo(step_list, inputString, cluster_id, emr.describe_cluster(ClusterId=cluster_id)['Cluster']['Name'], inputAwsRegion)
 
     print(json.dumps(step_info, indent=4))
 
