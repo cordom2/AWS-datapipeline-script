@@ -1,5 +1,6 @@
 import boto3
 import json
+import datetime
 
 def findPipelineId(obj_dictionary, identifier):
     lst = obj_dictionary['pipelineIdList']
@@ -37,7 +38,10 @@ def findDuration(cluster_info):
     try:
         return str(cluster_info['Status']['Timeline']['EndDateTime'] - cluster_info['Status']['Timeline']['ReadyDateTime'])
     except:
-        return "Run Not Complete"
+        try:
+            return str(datetime.datetime.now() - cluster_info['Status']['Timeline']['ReadyDateTime'].replace(tzinfo=None))
+        except:
+            return str(0)
 
 
 def buildOutput(step_list, pipeline_name, cluster_id, cluster_info, awsRegion, pipeline_health):
@@ -65,10 +69,12 @@ def buildOutput(step_list, pipeline_name, cluster_id, cluster_info, awsRegion, p
             'Name': obj['Name'],
             'Command': getCommand(obj)
         }
-        if obj['Status']['State'] == 'COMPLETED' or obj['Status']['State'] == 'FAILED':
-            start = obj['Status']['Timeline']['StartDateTime']
-            end = obj['Status']['Timeline']['EndDateTime']
-            info['Steps'][len(lst)-offset]['Duration'] = str(end - start)
+
+        try:
+            info['Steps'][len(lst)-offset]['Duration'] = str(obj['Status']['Timeline']['EndDateTime'] - obj['Status']['Timeline']['StartDateTime'])
+        except:
+            info['Steps'][len(lst)-offset]['Duration'] = str(datetime.datetime.now() - obj['Status']['Timeline']['StartDateTime'].replace(tzinfo=None))
+
         if obj['Status']['State'] != "COMPLETED":
             info['Steps'][len(lst)-offset]['Status'] = obj['Status']['State']
 
